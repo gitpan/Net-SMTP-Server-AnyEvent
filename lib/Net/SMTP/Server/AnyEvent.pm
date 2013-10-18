@@ -13,11 +13,11 @@ Net::SMTP::Server::AnyEvent - Expiremental SMTP server using AnyEvent!
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 =head1 SYNOPSIS
@@ -170,7 +170,7 @@ sub _PROCESS {
     
     if ($buf=~m/^EHLO (.*?)$/is) {
         $self->_COMMAND($k,'EHLO',$1);
-        $self->_WRITE($k,"250-$1\n250-SIZE 31457280\n250 OK");
+        $self->_WRITE($k,"250-${$k}[0]\015\012250-SIZE 31457280\015\012250 OK");
     } elsif ($buf=~m/^QUIT$/is) {
         $self->_COMMAND($k,'QUIT');
         $self->_WRITE($k,'221 Service closing transmission channel');
@@ -227,7 +227,7 @@ sub _DEBUG {
     my $k=shift;
     my $str=shift||'';
     if ($self->{debug} == 1) {
-        print '['.$k->[0].':'.$k->[1].'] '.$str."\n";
+        print '['.$k->[0].':'.$k->[1].'] '.$str."\r\n";
     } else {
         syswrite $self->{debug_fh}{ $k->[0].':'.$k->[1] }, '['.$k->[0].':'.$k->[1].'] '.$str."\r\n";
         
